@@ -1,6 +1,7 @@
 export type UserRole = 'student' | 'lecturer';
 
 export interface User {
+  uid: string; // Firebase Auth User ID
   fullName: string;
   idNumber: string; // NIM for student, NIP for lecturer
   password: string;

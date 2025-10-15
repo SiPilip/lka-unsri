@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { User } from '../types';
 
@@ -37,7 +38,15 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user, allUsers, onUpdateUser 
         if (user.role !== 'student' || !user.dosenPA) {
             return 'N/A';
         }
-        const lecturer = lecturers.find(u => u.idNumber === user.dosenPA);
+
+        // --- DEBUGGING LOGS ---
+        console.log("========================================");
+        console.log("Mencari Dosen PA dengan NIP:", `'${user.dosenPA}'`);
+        console.log("Daftar NIP Dosen Tersedia:", lecturers.map(l => `'${l.idNumber}'`));
+        console.log("========================================");
+        // --- END DEBUGGING LOGS ---
+
+        const lecturer = lecturers.find(u => u.idNumber.trim() === user.dosenPA.trim());
         return lecturer ? lecturer.fullName : 'N/A';
     }, [user, lecturers]);
 

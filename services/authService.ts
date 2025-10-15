@@ -23,22 +23,14 @@ export const signUp = async (email: string, password: string, fullName: string, 
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const { uid } = userCredential.user;
 
-        // Buat profil pengguna di Firestore
-        const userProfileData = {
+        // Buat profil pengguna di Firestore, sekarang dengan idNumber
+        const userProfileData: Omit<User, 'uid' | 'password'> = {
             fullName,
-            email,
+            idNumber: email, // Menggunakan email sebagai idNumber awal saat registrasi
             role,
-            createdAt: new Date().toISOString(), // Tambahkan timestamp pembuatan
-        };
-        
-        // Hapus properti yang tidak relevan untuk tipe User
-        const finalProfileData: Omit<User, 'idNumber' | 'password'> = {
-            fullName: fullName,
-            role: role,
-            // email sudah termasuk dalam data dari auth, jadi tidak perlu ditambahkan lagi
         };
 
-        await createUserProfile(uid, finalProfileData);
+        await createUserProfile(uid, userProfileData);
 
         return userCredential.user;
     } catch (error) {

@@ -137,7 +137,7 @@ const LecturerDashboard: React.FC<LecturerDashboardProps> = (props) => {
             case 'dashboard': return <SummaryView stats={{ newQuestions: newQuestionsCount, totalBookings: pendingScheduleRequestsCount, totalStudents: studentsWithBookings.length }} user={user} />;
             case 'questions': return <QuestionsView questions={myQuestions} onAnswerQuestion={onAnswerQuestion} />;
             case 'schedule': return <ScheduleView schedule={mySchedule} onAddSlot={onAddScheduleSlot} lecturerId={user.idNumber} onMarkAsCompleted={onMarkAsCompleted} />;
-            case 'students': return <StudentsView students={studentsWithBookings} />;
+            case 'students': return <StudentsView students={mentoredStudents} />;
             case 'profile': return <div className="h-full"><ProfilePage user={user} onUpdateUser={onUpdateUser} allUsers={allUsers} /></div>;
             default: return null;
         }

@@ -589,7 +589,7 @@ const App: React.FC = () => {
 
 
 
-    try {
+        try {
 
 
 
@@ -597,7 +597,7 @@ const App: React.FC = () => {
 
 
 
-        await updateUserProfile(currentUser.idNumber, updatedUser);
+            await updateUserProfile(currentUser.uid, updatedUser);
 
 
 
