@@ -1,9 +1,89 @@
 
 import { db } from './firebaseService';
-import { doc, setDoc, getDoc, updateDoc, collection, onSnapshot, addDoc, runTransaction, serverTimestamp, query, orderBy } from 'firebase/firestore';
-import { User, ScheduleSlot, BookedStudent, Question } from '../types';
+import { doc, setDoc, getDoc, updateDoc, collection, onSnapshot, addDoc, runTransaction, serverTimestamp, query, orderBy, where, writeBatch, deleteDoc } from 'firebase/firestore';
+import { User, ScheduleSlot, BookedStudent, Question, Notification } from '../types';
 
-// ... (fungsi user dan schedule yang sudah ada)
+// ... (fungsi user, schedule, dan questions yang sudah ada)
+
+// --- Fungsi untuk Notifikasi (Notifications) ---
+
+/**
+ * Listener untuk mendapatkan notifikasi seorang pengguna secara real-time.
+ * @param userId ID pengguna yang notifikasinya ingin didengarkan.
+ * @param callback Fungsi yang akan menerima array data notifikasi.
+ * @returns Unsubscribe function.
+ */
+export const onNotificationsSnapshot = (userId: string, callback: (notifications: Notification[]) => void) => {
+    const notificationsCollectionRef = collection(db, 'notifications');
+    const q = query(
+        notificationsCollectionRef, 
+        where('recipientId', '==', userId),
+        orderBy('timestamp', 'desc')
+    );
+    return onSnapshot(q, (snapshot) => {
+        const notificationsList = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+        } as Notification));
+        callback(notificationsList);
+    });
+};
+
+/**
+ * Menambahkan notifikasi baru ke Firestore.
+ * @param notificationData Data notifikasi.
+ */
+export const addNotification = (notificationData: Omit<Notification, 'id'>) => {
+    const notificationsCollectionRef = collection(db, 'notifications');
+    return addDoc(notificationsCollectionRef, notificationData);
+};
+
+/**
+ * Menghapus satu notifikasi berdasarkan ID-nya.
+ * @param notificationId ID notifikasi yang akan dihapus.
+ */
+export const deleteNotification = (notificationId: string) => {
+    const notificationDocRef = doc(db, 'notifications', notificationId);
+    return deleteDoc(notificationDocRef);
+};
+
+/**
+ * Menandai semua notifikasi pengguna sebagai sudah dibaca.
+ * @param userId ID pengguna.
+ */
+export const markAllNotificationsAsRead = async (userId: string) => {
+    const batch = writeBatch(db);
+    const notificationsCollectionRef = collection(db, 'notifications');
+    const q = query(
+        notificationsCollectionRef, 
+        where('recipientId', '==', userId),
+        where('isRead', '==', false)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+        batch.update(doc.ref, { isRead: true });
+    });
+
+    await batch.commit();
+};
+
+/**
+ * Menghapus semua notifikasi milik seorang pengguna.
+ * @param userId ID pengguna.
+ */
+export const clearAllNotifications = async (userId: string) => {
+    const batch = writeBatch(db);
+    const notificationsCollectionRef = collection(db, 'notifications');
+    const q = query(notificationsCollectionRef, where('recipientId', '==', userId));
+    
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+        batch.delete(doc.ref);
+    });
+
+    await batch.commit();
+};
 
 // --- Fungsi untuk Pertanyaan (Questions) ---
 

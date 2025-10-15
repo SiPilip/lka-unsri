@@ -9,7 +9,15 @@ import React, { useState, useEffect } from 'react';
 
 
 
+
+
+
+
 import LoginPage from './components/LoginPage';
+
+
+
+
 
 
 
@@ -17,7 +25,15 @@ import StudentDashboard from './components/StudentDashboard';
 
 
 
+
+
+
+
 import LecturerDashboard from './components/LecturerDashboard';
+
+
+
+
 
 
 
@@ -25,7 +41,15 @@ import ProfilePage from './components/ProfilePage';
 
 
 
+
+
+
+
 import AskQuestionPage from './components/AskQuestionPage';
+
+
+
+
 
 
 
@@ -33,7 +57,15 @@ import SchedulePage from './components/SchedulePage';
 
 
 
+
+
+
+
 import SignUpPage from './components/SignUpPage';
+
+
+
+
 
 
 
@@ -41,7 +73,15 @@ import HistoryPage from './components/HistoryPage';
 
 
 
+
+
+
+
 import InterestPage from './components/InterestPage';
+
+
+
+
 
 
 
@@ -49,7 +89,15 @@ import Footer from './components/Footer';
 
 
 
-import { User, ScheduleSlot, Question, BookedStudent, Notification } from './types';
+
+
+
+
+import { User, ScheduleSlot, Question, Notification } from './types';
+
+
+
+
 
 
 
@@ -57,7 +105,15 @@ import { onAuthStateChanged, signOut as signOutUser } from './services/authServi
 
 
 
+
+
+
+
 import { 
+
+
+
+
 
 
 
@@ -65,7 +121,15 @@ import {
 
 
 
+
+
+
+
     onUsersSnapshot, 
+
+
+
+
 
 
 
@@ -73,7 +137,15 @@ import {
 
 
 
+
+
+
+
     addSchedule, 
+
+
+
+
 
 
 
@@ -81,7 +153,15 @@ import {
 
 
 
+
+
+
+
     updateStudentStatusInSlot,
+
+
+
+
 
 
 
@@ -89,15 +169,71 @@ import {
 
 
 
+
+
+
+
     addQuestion,
 
 
 
-    answerQuestion
+
+
+
+
+    answerQuestion,
+
+
+
+
+
+
+
+    onNotificationsSnapshot,
+
+
+
+
+
+
+
+    addNotification as addNotificationToDb,
+
+
+
+
+
+
+
+    deleteNotification as deleteNotificationFromDb,
+
+
+
+
+
+
+
+    clearAllNotifications as clearAllNotificationsFromDb,
+
+
+
+
+
+
+
+    markAllNotificationsAsRead as markAllNotificationsAsReadInDb
+
+
+
+
 
 
 
 } from './services/firestoreService';
+
+
+
+
 
 
 
@@ -109,7 +245,19 @@ import LoadingSpinner from './components/LoadingSpinner';
 
 
 
+
+
+
+
+
+
+
+
 const App: React.FC = () => {
+
+
+
+
 
 
 
@@ -117,7 +265,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
   const [isLoading, setIsLoading] = useState(true);
+
+
+
+
 
 
 
@@ -125,7 +281,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
   const [view, setView] = useState<'dashboard' | 'profile' | 'ask' | 'schedule' | 'history' | 'interests'>('dashboard');
+
+
+
+
 
 
 
@@ -133,7 +297,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
   const [schedule, setSchedule] = useState<ScheduleSlot[]>([]);
+
+
+
+
 
 
 
@@ -141,7 +313,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
   const [notifications, setNotifications] = useState<Notification[]>([]);
+
+
+
+
 
 
 
@@ -153,7 +333,27 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
+
+
+
+
+  // Listener untuk data global (users, schedule, questions)
+
+
+
+
+
+
+
   useEffect(() => {
+
+
+
+
 
 
 
@@ -161,7 +361,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
       setCurrentUser(user);
+
+
+
+
 
 
 
@@ -169,19 +377,7 @@ const App: React.FC = () => {
 
 
 
-    });
 
-
-
-
-
-
-
-    const unsubscribeUsers = onUsersSnapshot((users) => {
-
-
-
-      setAllUsers(users);
 
 
 
@@ -193,15 +389,6 @@ const App: React.FC = () => {
 
 
 
-    const unsubscribeSchedule = onScheduleSnapshot((schedules) => {
-
-
-
-      setSchedule(schedules);
-
-
-
-    });
 
 
 
@@ -209,15 +396,32 @@ const App: React.FC = () => {
 
 
 
-    const unsubscribeQuestions = onQuestionsSnapshot((questions) => {
+
+    const unsubscribeUsers = onUsersSnapshot((users) => setAllUsers(users));
 
 
 
-      setQuestions(questions);
 
 
 
-    });
+
+    const unsubscribeSchedule = onScheduleSnapshot((schedules) => setSchedule(schedules));
+
+
+
+
+
+
+
+    const unsubscribeQuestions = onQuestionsSnapshot((questions) => setQuestions(questions));
+
+
+
+
+
+
+
+
 
 
 
@@ -229,7 +433,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
       unsubscribeAuth();
+
+
+
+
 
 
 
@@ -237,7 +449,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
       unsubscribeSchedule();
+
+
+
+
 
 
 
@@ -245,7 +465,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
     };
+
+
+
+
 
 
 
@@ -257,31 +485,67 @@ const App: React.FC = () => {
 
 
 
-  const handleUpdateUser = async (updatedUser: User) => {
 
 
 
-    if (!currentUser) return;
 
 
 
-    try {
+
+
+  // Listener untuk data spesifik pengguna (notifikasi)
 
 
 
-        await updateUserProfile(currentUser.idNumber, updatedUser);
 
 
 
-        setCurrentUser(updatedUser);
+
+  useEffect(() => {
 
 
 
-    } catch (error) {
 
 
 
-        console.error("Failed to update user:", error);
+
+    if (currentUser) {
+
+
+
+
+
+
+
+      const unsubscribeNotifications = onNotificationsSnapshot(currentUser.idNumber, (notifs) => {
+
+
+
+
+
+
+
+        setNotifications(notifs);
+
+
+
+
+
+
+
+      });
+
+
+
+
+
+
+
+      return () => unsubscribeNotifications();
+
+
+
+
 
 
 
@@ -289,15 +553,31 @@ const App: React.FC = () => {
 
 
 
-  };
 
 
 
-  
+
+  }, [currentUser]);
 
 
 
-  const handleUpdateInterests = (interests: string[], otherInterest: string) => {
+
+
+
+
+
+
+
+
+
+
+
+
+  const handleUpdateUser = async (updatedUser: User) => {
+
+
+
+
 
 
 
@@ -305,7 +585,207 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
+    try {
+
+
+
+
+
+
+
+        await updateUserProfile(currentUser.idNumber, updatedUser);
+
+
+
+
+
+
+
+        setCurrentUser(updatedUser);
+
+
+
+
+
+
+
+    } catch (error) {
+
+
+
+
+
+
+
+        console.error("Failed to update user:", error);
+
+
+
+
+
+
+
+    }
+
+
+
+
+
+
+
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  const addNotification = async (recipientId: string, message: string) => {
+
+
+
+
+
+
+
+    const newNotification: Omit<Notification, 'id'> = {
+
+
+
+
+
+
+
+        recipientId,
+
+
+
+
+
+
+
+        message,
+
+
+
+
+
+
+
+        timestamp: Date.now(),
+
+
+
+
+
+
+
+        isRead: false,
+
+
+
+
+
+
+
+    };
+
+
+
+
+
+
+
+    try {
+
+
+
+
+
+
+
+        await addNotificationToDb(newNotification);
+
+
+
+
+
+
+
+    } catch (error) {
+
+
+
+
+
+
+
+        console.error("Failed to add notification:", error);
+
+
+
+
+
+
+
+    }
+
+
+
+
+
+
+
+  };
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+  const handleUpdateInterests = (interests: string[], otherInterest: string) => {
+
+
+
+
+
+
+
+    if (!currentUser) return;
+
+
+
+
+
+
+
     const updatedUser: User = { ...currentUser, interests, otherInterest };
+
+
+
+
 
 
 
@@ -313,11 +793,27 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
     addNotification(currentUser.idNumber, "Minat jurusan Anda berhasil diperbarui.");
 
 
 
+
+
+
+
   };
+
+
+
+
+
+
+
+
 
 
 
@@ -329,7 +825,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
     setView(target);
+
+
+
+
 
 
 
@@ -337,47 +841,11 @@ const App: React.FC = () => {
 
 
 
-  
 
 
 
-  const addNotification = (recipientId: string, message: string) => {
 
 
-
-    const newNotification: Notification = {
-
-
-
-        id: Date.now().toString(),
-
-
-
-        recipientId,
-
-
-
-        message,
-
-
-
-        timestamp: Date.now(),
-
-
-
-        isRead: false,
-
-
-
-    };
-
-
-
-    setNotifications(prev => [newNotification, ...prev]);
-
-
-
-  };
 
 
 
@@ -389,7 +857,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
     if(!currentUser) return;
+
+
+
+
 
 
 
@@ -397,7 +873,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
         await addQuestion({ ...question, submissionTime: Date.now() });
+
+
+
+
 
 
 
@@ -405,7 +889,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
         addNotification(question.lecturerId, `Pertanyaan baru dari ${currentUser.fullName}.`);
+
+
+
+
 
 
 
@@ -413,7 +905,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
     } catch (error) {
+
+
+
+
 
 
 
@@ -421,11 +921,27 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
     }
 
 
 
+
+
+
+
   };
+
+
+
+
+
+
+
+
 
 
 
@@ -437,11 +953,23 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
     if (!currentUser) return;
 
 
 
+
+
+
+
     try {
+
+
+
+
 
 
 
@@ -449,7 +977,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
         const bookedSlotInfo = schedule.find(s => s.id === slotId);
+
+
+
+
 
 
 
@@ -457,7 +993,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
             addNotification(currentUser.idNumber, `Anda berhasil memesan jadwal pada ${bookedSlotInfo.date} jam ${bookedSlotInfo.time}.`);
+
+
+
+
 
 
 
@@ -465,11 +1009,23 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
         }
 
 
 
+
+
+
+
     } catch (error) {
+
+
+
+
 
 
 
@@ -477,7 +1033,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
         alert(error);
+
+
+
+
 
 
 
@@ -485,11 +1049,23 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
   };
 
 
 
+
+
+
+
   
+
+
+
+
 
 
 
@@ -497,7 +1073,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
       try {
+
+
+
+
 
 
 
@@ -505,7 +1089,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
         const studentsToNotify = allUsers.filter(u => u.role === 'student' && u.dosenPA === slot.lecturerId);
+
+
+
+
 
 
 
@@ -513,7 +1105,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
             addNotification(student.idNumber, `Dosen PA Anda menambahkan jadwal baru pada ${slot.date} jam ${slot.time}.`);
+
+
+
+
 
 
 
@@ -521,7 +1121,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
       } catch (error) {
+
+
+
+
 
 
 
@@ -529,7 +1137,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
       }
+
+
+
+
 
 
 
@@ -537,7 +1153,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
   
+
+
+
+
 
 
 
@@ -545,7 +1169,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
     try {
+
+
+
+
 
 
 
@@ -553,7 +1185,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
         const answeredQuestion = questions.find(q => q.id === questionId);
+
+
+
+
 
 
 
@@ -561,7 +1201,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
             addNotification(answeredQuestion.studentId, `Pertanyaan "${answeredQuestion.title}" telah dijawab.`);
+
+
+
+
 
 
 
@@ -569,7 +1217,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
     } catch (error) {
+
+
+
+
 
 
 
@@ -577,7 +1233,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
     }
+
+
+
+
 
 
 
@@ -585,7 +1249,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
   
+
+
+
+
 
 
 
@@ -593,7 +1265,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
     try {
+
+
+
+
 
 
 
@@ -601,7 +1281,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
         const targetSlot = schedule.find(s => s.id === slotId);
+
+
+
+
 
 
 
@@ -609,7 +1297,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
              addNotification(
+
+
+
+
 
 
 
@@ -617,7 +1313,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
                 `Konsultasi pada ${targetSlot.date} jam ${targetSlot.time} telah selesai.`
+
+
+
+
 
 
 
@@ -625,7 +1329,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
         }
+
+
+
+
 
 
 
@@ -633,11 +1345,23 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
         console.error("Failed to mark as completed:", error);
 
 
 
+
+
+
+
     }
+
+
+
+
 
 
 
@@ -649,7 +1373,19 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
+
+
+
+
   const handleLogout = async () => {
+
+
+
+
 
 
 
@@ -657,7 +1393,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
         await signOutUser();
+
+
+
+
 
 
 
@@ -665,7 +1409,15 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
         console.error("Logout error:", error);
+
+
+
+
 
 
 
@@ -673,6 +1425,10 @@ const App: React.FC = () => {
 
 
 
+
+
+
+
   };
 
 
@@ -681,7 +1437,19 @@ const App: React.FC = () => {
 
 
 
-  const handleMarkNotificationsAsRead = () => {
+
+
+
+
+
+
+
+
+  const handleMarkNotificationsAsRead = async () => {
+
+
+
+
 
 
 
@@ -689,15 +1457,47 @@ const App: React.FC = () => {
 
 
 
-    setNotifications(prev => prev.map(n => 
 
 
 
-        n.recipientId === currentUser.idNumber ? { ...n, isRead: true } : n
+
+    try {
 
 
 
-    ));
+
+
+
+
+        await markAllNotificationsAsReadInDb(currentUser.idNumber);
+
+
+
+
+
+
+
+    } catch (error) {
+
+
+
+
+
+
+
+        console.error("Failed to mark notifications as read:", error);
+
+
+
+
+
+
+
+    }
+
+
+
+
 
 
 
@@ -709,15 +1509,67 @@ const App: React.FC = () => {
 
 
 
-  const handleDeleteNotification = (id: string) => {
 
 
 
-    setNotifications(prev => prev.filter(n => n.id !== id));
+
+
+
+
+
+  const handleDeleteNotification = async (id: string) => {
+
+
+
+
+
+
+
+    try {
+
+
+
+
+
+
+
+        await deleteNotificationFromDb(id);
+
+
+
+
+
+
+
+    } catch (error) {
+
+
+
+
+
+
+
+        console.error("Failed to delete notification:", error);
+
+
+
+
+
+
+
+    }
+
+
+
+
 
 
 
   };
+
+
+
+
 
 
 
@@ -725,7 +1577,15 @@ const App: React.FC = () => {
 
 
 
-  const handleClearAllNotifications = () => {
+
+
+
+
+  const handleClearAllNotifications = async () => {
+
+
+
+
 
 
 
@@ -733,7 +1593,47 @@ const App: React.FC = () => {
 
 
 
-    setNotifications(prev => prev.filter(n => n.recipientId !== currentUser.idNumber));
+
+
+
+
+     try {
+
+
+
+
+
+
+
+        await clearAllNotificationsFromDb(currentUser.idNumber);
+
+
+
+
+
+
+
+    } catch (error) {
+
+
+
+
+
+
+
+        console.error("Failed to clear notifications:", error);
+
+
+
+
+
+
+
+    }
+
+
+
+
 
 
 
