@@ -1,9 +1,50 @@
 
 import { db } from './firebaseService';
-import { doc, setDoc, getDoc, updateDoc, collection, onSnapshot, addDoc, runTransaction, serverTimestamp } from 'firebase/firestore';
-import { User, ScheduleSlot, BookedStudent } from '../types';
+import { doc, setDoc, getDoc, updateDoc, collection, onSnapshot, addDoc, runTransaction, serverTimestamp, query, orderBy } from 'firebase/firestore';
+import { User, ScheduleSlot, BookedStudent, Question } from '../types';
 
-// ... (fungsi user yang sudah ada)
+// ... (fungsi user dan schedule yang sudah ada)
+
+// --- Fungsi untuk Pertanyaan (Questions) ---
+
+/**
+ * Listener untuk mendapatkan semua data pertanyaan secara real-time.
+ * @param callback Fungsi yang akan menerima array data pertanyaan.
+ * @returns Unsubscribe function.
+ */
+export const onQuestionsSnapshot = (callback: (questions: Question[]) => void) => {
+    const questionsCollectionRef = collection(db, 'questions');
+    const q = query(questionsCollectionRef, orderBy('submissionTime', 'desc'));
+    return onSnapshot(q, (snapshot) => {
+        const questionsList = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+        } as Question));
+        callback(questionsList);
+    });
+};
+
+/**
+ * Menambahkan pertanyaan baru dari mahasiswa.
+ * @param questionData Data pertanyaan baru.
+ */
+export const addQuestion = (questionData: Omit<Question, 'id'>) => {
+    const questionsCollectionRef = collection(db, 'questions');
+    return addDoc(questionsCollectionRef, questionData);
+};
+
+/**
+ * Menjawab sebuah pertanyaan oleh dosen.
+ * @param questionId ID dari pertanyaan yang akan dijawab.
+ * @param answerText Teks jawaban dari dosen.
+ */
+export const answerQuestion = (questionId: string, answerText: string) => {
+    const questionDocRef = doc(db, 'questions', questionId);
+    return updateDoc(questionDocRef, {
+        answerText: answerText,
+        status: 'answered',
+    });
+};
 
 /**
  * Membuat profil pengguna baru di koleksi 'users' setelah registrasi berhasil.
